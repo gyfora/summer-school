@@ -18,8 +18,6 @@ object FlinkKafkaExample {
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
 
-    //    val source = env.fromElements("BP,30", "BP,35", "STHLM,20", "BP,r", "error")
-
     // Connect to Kafka and read the inputs (unparsed strings containing current temperature)
     val source = env.addSource(new KafkaSource[String]("localhost:2181", "input", new SimpleStringSchema))
 
@@ -38,32 +36,22 @@ object FlinkKafkaExample {
     val errors: DataStream[String] = parsed.filter(_.isLeft).map(_.left.get)
     val temps: DataStream[Temp] = parsed.filter(_.isRight).map(_.right.get)
 
-    // We compute the current average of each city's temperature
-    val avgTemps: DataStream[Temp] = temps.keyBy("city").mapWithState((in, state: Option[(Double, Long)]) =>
+    // We compute the current average of each city's temperature and output every 10th update/city
+    val avgTemps: DataStream[Temp] = temps.keyBy("city").flatMapWithState((in, state: Option[(Double, Long)]) =>
       {
         val s = state.getOrElse((0.0, 0L))
         val u = (s._1 + in.temp, s._2 + 1)
-        (Temp(in.city, u._1 / u._2), Some(u))
-      })
-
-    // As the average will be updated at each new record we want to filter it down 
-    // to keep only 10% data for further analysis
-    val sample: DataStream[Temp] = avgTemps.keyBy("city").filterWithState((t, c: Option[Int]) =>
-      {
-        val count = c.getOrElse(0) + 1
-        if (count < 10) (false, Some(count)) else (true, None)
+        (if (s._2 % 10 == 0) List(Temp(in.city, u._1 / u._2)) else (List()), Some(u))
       })
 
     // For also compute the current global in every 5 second interval
     val globalMax = temps.window(Time.of(5, SECONDS)).max("temp").flatten
 
-    // We write the results to the respective kafka topics
-    sample.addSink(new KafkaSink("localhost:9092", "output_avg", ss))
+    // We write the results to the respective Kafka topics
+    avgTemps.addSink(new KafkaSink("localhost:9092", "output_avg", ss))
     globalMax.addSink(new KafkaSink("localhost:9092", "output_max", ss))
 
-    sample.print
-    globalMax.map("Max in last 5 secs: " + _).print
-
+    // Print the errors to the console
     errors.map("Errored: " + _).print
 
     env.execute

@@ -19,9 +19,15 @@ object DataGenerator {
 
     val producer = new Producer[String, String](config);
 
+    var count = 0
+
     while (true) {
+      Thread.sleep(10)
       producer.send(new KeyedMessage[String, String]("input", null, getRandomTemp));
-      Thread.sleep(100)
+      count += 1
+      if (count % 100 == 0) {
+        println("Generated " + count + " outputs...");
+      }
     }
     producer.close
   }
