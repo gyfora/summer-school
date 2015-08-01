@@ -4,10 +4,16 @@ This repository contains the components for a simple streaming pipeline:
  * Generate data and write it to Apache Kafka
  * Process the generated data from Kafka using Apache Flink
  * Write the results back to Kafka for further processing
- * Analyize the results from Kafka using Ipython Notebook
+ * Analyze the results from Kafka using Ipython Notebook
 
-### Instructions:
+**Prerequisites**
+ * JDK 7+
+ * Maven 3.x
+ * Scala 2.10
+ * Python 2.7
+ * IPython notebook
 
+### Running the example:
  1. Download & install [Apache Kafka](https://kafka.apache.org/08/quickstart.html)
  2. Install the Python kafka client
 
@@ -39,17 +45,17 @@ This repository contains the components for a simple streaming pipeline:
     ```bash
     cd <git>/summer-school/flink
     # We use a Flink minicluster now, but this jar could be submitted to a proper Flink cluster as well
-    java -classpath target/flink-kafka-example-1.jar summerschool.FlinkKafkaExample
+    java -classpath target/flink-kafka-example-1.0.0-jar-with-dependencies.jar summerschool.FlinkKafkaExample
     ```
  6. Start Data generator
 
     ```bash
     cd <git>/summer-school/flink
-    java -classpath target/flink-kafka-example-1.jar summerschool.DataGenerator
+    java -classpath target/flink-kafka-example-1.0.0-jar-with-dependencies.jar summerschool.DataGenerator
     ```
- 7. Start IPython Notebook to further analyze the results
+ 7. Start IPython Notebook to further analyse the results
 
     ```bash
     cd <git>/summer-school/python
-    ipython notebook --pylab=inline
+    ipython notebook
     ```
