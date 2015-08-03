@@ -51,11 +51,13 @@ object DataGenerator {
   }
 
   def getRandomTemp: String = {
-    val city = cities(Random.nextInt(cities.size))
-    val temp = Random.nextGaussian * 15 + 20
+    val i = Random.nextInt(cities.size)
+    val city = cities(i)
+    val mean = mean_temps(i)
+    val temp = Random.nextGaussian * 5 + mean
     city + "," + temp
   }
 
   val cities = List("Tirane", "Andorra-la-vella", "Jerevan", "Vienna", "Baku", "Minsk", "Brussels", "Sarajevo", "Sofia", "Zagreb", "Nicosia", "Prague", "Copenhagen", "Tallinn", "Helsinki", "Paris", "Cayenne", "Tbilisi", "Berlin", "Athens", "Budapest", "Reykjavik", "Rome", "Riga", "Vaduz", "Vilnius", "Luxemburg", "Skopje", "Valletta", "Fort-de-France", "Kishinev", "Monaco", "Amsterdam", "Oslo", "Belfast", "Warsaw", "Lisbon", "Bucharest", "Moscow", "San Marino", "Edinburgh", "Bratislava", "Ljubljana", "Madrid", "Stockholm", "Berne", "Dushanbe", "Kiev", "London", "Toshkent", "Vatican City", "Belgrade")
-
+  val mean_temps = cities.map(x => Random.nextGaussian * 5 + 20)
 }
