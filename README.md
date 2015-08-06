@@ -6,6 +6,8 @@ This repository contains the components for a simple streaming pipeline:
  * Write the results back to Kafka for further processing
  * Analyze the results from Kafka using Ipython Notebook
 
+**Questions and feedback can be sent to [gyfora@apache.org](mailto:gyfora@apache.org)**
+
 ### Description
 
 In this very simple example we will analyse temperature data, generated for European cities in a streaming fashion.
