@@ -65,7 +65,7 @@ object FlinkKafkaExample {
       })
 
     // Compute the current global maximum in every 5 second interval
-    val globalMax = temps.window(Time.of(5, SECONDS)).max("temp").flatten
+    val globalMax = temps.window(Time.of(5, SECONDS)).maxBy("temp").flatten
 
     // Write the results to the respective Kafka topics
     avgTemps.addSink(new KafkaSink("localhost:9092", "output_avg", ss))
